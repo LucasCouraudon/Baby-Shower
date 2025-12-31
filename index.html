@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scores Baby Shower</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FDFBF7;
+            --card-bg: #FFFFFF;
+            --text-color: #5D4037;
+            --accent-color: #D4AF37;
+            --highlight: #E8D696;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 50px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid #E0E0E0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .team-card.leader {
+            border: 2px solid var(--accent-color);
+            transform: scale(1.05);
+            background: linear-gradient(to bottom right, #fff, #FFFDF5);
+            z-index: 10;
+        }
+
+        .team-card.leader::after {
+            content: '★ 1er';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            background: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .team-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .team-members {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 15px;
+            font-style: italic;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-score {
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        /* --- NOUVEAU STYLE DU PANNEAU LATÉRAL --- */
+        .controls {
+            background: white;
+            padding: 30px;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            width: 350px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: -410px; /* Caché à droite (largeur + padding) */
+            transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .controls.visible {
+            right: 0;
+        }
+
+        /* La Flèche (Trigger) */
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            left: -50px; /* Sort du panneau vers la gauche */
+            width: 50px;
+            height: 60px;
+            transform: translateY(-50%);
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 10px 0 0 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .toggle-btn:hover {
+            background: #b59021;
+        }
+
+        .controls-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9f9f9;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .input-group input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+            font-family: 'Lora', serif;
+        }
+
+        .btn-add {
+            background-color: var(--accent-color);
+            color: white;
+            margin-top: 20px;
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn-add:hover { background-color: #b59021; }
+
+        .btn-reset {
+            background-color: #d9534f;
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .scoreboard { grid-template-columns: 1fr; }
+            .controls { width: 100%; right: -100%; } /* Plein écran sur mobile */
+            .toggle-btn { left: -40px; width: 40px; font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Baby Shower</h1>
+<h2 id="phase-title">Tableau des Scores</h2>
+
+<div class="scoreboard" id="scoreboard"></div>
+
+<div class="controls" id="adminPanel">
+    <button class="toggle-btn" onclick="toggleAdmin()" title="Gérer les points">
+        &#9664; </button>
+
+    <div class="controls-header">
+        <h3 style="margin:0;">Ajout de points</h3>
+        <p style="font-size:0.9rem; color:#888; margin:5px 0;">Entrez les points gagnés ce tour-ci</p>
+        <button class="btn btn-reset" onclick="resetAll()">Remise à zéro totale</button>
+    </div>
+
+    <div class="input-grid" id="inputsList"></div>
+
+    <button class="btn btn-add" onclick="updateScores()">Valider & Mettre à jour</button>
+</div>
+
+<script>
+    // Données initiales
+    const initialTeams = [
+        { id: 1, name: "Équipe I", members: "Jérôme, Adrien, Inès, Stéphanie...", score: 0 },
+        { id: 2, name: "Équipe II", members: "Alain, Melyna, Patrick, Axelle...", score: 0 },
+        { id: 3, name: "Équipe III", members: "Axel, Carlos, Kevin, Julie D...", score: 0 },
+        { id: 4, name: "Équipe IV", members: "Kristofer, Alexandre, Sébastien...", score: 0 },
+        { id: 5, name: "Équipe V", members: "Cyril, Ruben, Yohan, Joselyne...", score: 0 },
+        { id: 6, name: "Équipe VI", members: "Stéphane, Lenny, Doriane, Anelynn...", score: 0 }
+    ];
+
+    let teams = JSON.parse(localStorage.getItem('babyShowerScores')) || initialTeams;
+
+    function renderBoard() {
+        const board = document.getElementById('scoreboard');
+        const inputs = document.getElementById('inputsList');
+
+        board.innerHTML = '';
+        inputs.innerHTML = '';
+
+        // Tri pour affichage (du premier au dernier)
+        const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+
+        sortedTeams.forEach((team, index) => {
+            const isLeader = index === 0 && team.score > 0;
+            const card = document.createElement('div');
+            card.className = `team-card ${isLeader ? 'leader' : ''}`;
+            card.innerHTML = `
+                    <div class="team-name">${team.name}</div>
+                    <div class="team-members">${team.members}</div>
+                    <div class="team-score">${team.score}</div>
+                `;
+            board.appendChild(card);
+        });
+
+        // Inputs (ordre fixe 1 à 6 pour faciliter la saisie papier -> écran)
+        teams.forEach(team => {
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group';
+            inputGroup.innerHTML = `
+                    <label>${team.name}</label>
+                    <input type="number" id="input-${team.id}" placeholder="+ pts">
+                `;
+            inputs.appendChild(inputGroup);
+        });
+    }
+
+    function updateScores() {
+        let hasChanged = false;
+        teams.forEach(team => {
+            const input = document.getElementById(`input-${team.id}`);
+            const pointsToAdd = parseInt(input.value);
+            if (!isNaN(pointsToAdd) && pointsToAdd !== 0) {
+                team.score += pointsToAdd;
+                hasChanged = true;
+            }
+            input.value = '';
+        });
+
+        if(hasChanged) {
+            saveAndRender();
+            toggleAdmin();
+        }
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('babyShowerScores', JSON.stringify(teams));
+        renderBoard();
+    }
+
+    function resetAll() {
+        if(confirm("Attention : Cela va effacer tous les scores ! Confirmer ?")) {
+            teams.forEach(t => t.score = 0);
+            saveAndRender();
+            toggleAdmin();
+        }
+    }
+
+    function toggleAdmin() {
+        const panel = document.getElementById('adminPanel');
+        const btn = panel.querySelector('.toggle-btn');
+        panel.classList.toggle('visible');
+
+        // Change le sens de la flèche
+        if(panel.classList.contains('visible')) {
+            btn.innerHTML = '&#9654;'; // Flèche droite (Fermer)
+        } else {
+            btn.innerHTML = '&#9664;'; // Flèche gauche (Ouvrir)
+        }
+    }
+
+    renderBoard();
+</script>
+</body>
+</html>
