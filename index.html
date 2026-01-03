@@ -258,7 +258,8 @@
             { id: 6, name: "Équipe VI", members: "Stéphane, Carlos, Doriane, Anelynn, Fanny, Leatitia", score: 0 }
         ];
 
-        let teams = JSON.parse(localStorage.getItem('babyShowerScores')) || initialTeams;
+        // CHANGEMENT ICI : '_V2' force le navigateur à oublier l'ancienne liste et charger la nouvelle
+        let teams = JSON.parse(localStorage.getItem('babyShowerScores_V2')) || initialTeams;
 
         function renderBoard() {
             const board = document.getElementById('scoreboard');
@@ -311,7 +312,7 @@
         }
 
         function saveAndRender() {
-            localStorage.setItem('babyShowerScores', JSON.stringify(teams));
+            localStorage.setItem('babyShowerScores_V2', JSON.stringify(teams));
             renderBoard();
         }
 
